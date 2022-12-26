@@ -10,9 +10,9 @@ import (
 // except CheckTx/DeliverTx, which take `tx []byte`, and `Commit`, which takes nothing.
 type Application interface {
 	// Info/Query Connection
-	Info(RequestInfo) ResponseInfo                // Return application info
-	SetOption(RequestSetOption) ResponseSetOption // Set application option
-	Query(RequestQuery) ResponseQuery             // Query for state
+	Info(RequestInfo) ResponseInfo                     // Return application info
+	SetOption(RequestSetOption) ResponseSetOption      // Set application option
+	Query(context.Context, RequestQuery) ResponseQuery // Query for state
 
 	// Mempool Connection
 	CheckTx(RequestCheckTx) ResponseCheckTx // Validate a tx for the mempool
@@ -63,7 +63,7 @@ func (BaseApplication) Commit() ResponseCommit {
 	return ResponseCommit{}
 }
 
-func (BaseApplication) Query(req RequestQuery) ResponseQuery {
+func (BaseApplication) Query(ctx context.Context, req RequestQuery) ResponseQuery {
 	return ResponseQuery{Code: CodeTypeOK}
 }
 
@@ -135,7 +135,7 @@ func (app *GRPCApplication) CheckTx(ctx context.Context, req *RequestCheckTx) (*
 }
 
 func (app *GRPCApplication) Query(ctx context.Context, req *RequestQuery) (*ResponseQuery, error) {
-	res := app.app.Query(*req)
+	res := app.app.Query(ctx, *req)
 	return &res, nil
 }
 

@@ -3,6 +3,7 @@ package abcicli
 import (
 	"bufio"
 	"container/list"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -335,7 +336,8 @@ func (cli *socketClient) CheckTxSync(req types.RequestCheckTx) (*types.ResponseC
 	return reqres.Response.GetCheckTx(), cli.Error()
 }
 
-func (cli *socketClient) QuerySync(req types.RequestQuery) (*types.ResponseQuery, error) {
+// context
+func (cli *socketClient) QuerySync(_ context.Context, req types.RequestQuery) (*types.ResponseQuery, error) {
 	reqres := cli.queueRequest(types.ToRequestQuery(req))
 	if err := cli.FlushSync(); err != nil {
 		return nil, err

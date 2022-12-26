@@ -371,7 +371,8 @@ func (cli *grpcClient) CheckTxSync(params types.RequestCheckTx) (*types.Response
 	return cli.finishSyncCall(reqres).GetCheckTx(), cli.Error()
 }
 
-func (cli *grpcClient) QuerySync(req types.RequestQuery) (*types.ResponseQuery, error) {
+// TODO: use context
+func (cli *grpcClient) QuerySync(_ context.Context, req types.RequestQuery) (*types.ResponseQuery, error) {
 	reqres := cli.QueryAsync(req)
 	return cli.finishSyncCall(reqres).GetQuery(), cli.Error()
 }

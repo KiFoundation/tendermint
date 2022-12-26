@@ -2,6 +2,7 @@ package server
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"net"
@@ -213,7 +214,7 @@ func (s *SocketServer) handleRequest(req *types.Request, responses chan<- *types
 		res := s.app.Commit()
 		responses <- types.ToResponseCommit(res)
 	case *types.Request_Query:
-		res := s.app.Query(*r.Query)
+		res := s.app.Query(context.Background(), *r.Query) // TODO: check how to properly pass context here
 		responses <- types.ToResponseQuery(res)
 	case *types.Request_InitChain:
 		res := s.app.InitChain(*r.InitChain)

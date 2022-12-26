@@ -1,6 +1,7 @@
 package counter
 
 import (
+	"context"
 	"encoding/binary"
 	"fmt"
 
@@ -91,7 +92,7 @@ func (app *Application) Commit() (resp types.ResponseCommit) {
 	return types.ResponseCommit{Data: hash}
 }
 
-func (app *Application) Query(reqQuery types.RequestQuery) types.ResponseQuery {
+func (app *Application) Query(_ context.Context, reqQuery types.RequestQuery) types.ResponseQuery {
 	switch reqQuery.Path {
 	case "hash":
 		return types.ResponseQuery{Value: []byte(fmt.Sprintf("%v", app.hashCount))}

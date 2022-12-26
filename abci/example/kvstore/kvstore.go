@@ -2,6 +2,7 @@ package kvstore
 
 import (
 	"bytes"
+	"context"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
@@ -136,7 +137,7 @@ func (app *Application) Commit() types.ResponseCommit {
 }
 
 // Returns an associated value or nil if missing.
-func (app *Application) Query(reqQuery types.RequestQuery) (resQuery types.ResponseQuery) {
+func (app *Application) Query(_ context.Context, reqQuery types.RequestQuery) (resQuery types.ResponseQuery) {
 	if reqQuery.Prove {
 		value, err := app.state.db.Get(prefixKey(reqQuery.Data))
 		if err != nil {

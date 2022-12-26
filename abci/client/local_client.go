@@ -1,6 +1,8 @@
 package abcicli
 
 import (
+	"context"
+
 	types "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/service"
 	tmsync "github.com/tendermint/tendermint/libs/sync"
@@ -112,7 +114,7 @@ func (app *localClient) QueryAsync(req types.RequestQuery) *ReqRes {
 	app.mtx.Lock()
 	defer app.mtx.Unlock()
 
-	res := app.Application.Query(req)
+	res := app.Application.Query(context.Background(), req) // TODO: check how to properly handle context here
 	return app.callback(
 		types.ToRequestQuery(req),
 		types.ToResponseQuery(res),
@@ -249,11 +251,11 @@ func (app *localClient) CheckTxSync(req types.RequestCheckTx) (*types.ResponseCh
 	return &res, nil
 }
 
-func (app *localClient) QuerySync(req types.RequestQuery) (*types.ResponseQuery, error) {
+func (app *localClient) QuerySync(ctx context.Context, req types.RequestQuery) (*types.ResponseQuery, error) {
 	app.mtx.Lock()
 	defer app.mtx.Unlock()
 
-	res := app.Application.Query(req)
+	res := app.Application.Query(ctx, req)
 	return &res, nil
 }
 

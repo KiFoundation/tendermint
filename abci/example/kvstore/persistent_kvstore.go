@@ -2,6 +2,7 @@ package kvstore
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"fmt"
 	"strconv"
@@ -91,7 +92,7 @@ func (app *PersistentKVStoreApplication) Commit() types.ResponseCommit {
 
 // When path=/val and data={validator address}, returns the validator update (types.ValidatorUpdate) varint encoded.
 // For any other path, returns an associated value or nil if missing.
-func (app *PersistentKVStoreApplication) Query(reqQuery types.RequestQuery) (resQuery types.ResponseQuery) {
+func (app *PersistentKVStoreApplication) Query(ctx context.Context, reqQuery types.RequestQuery) (resQuery types.ResponseQuery) {
 	switch reqQuery.Path {
 	case "/val":
 		key := []byte("val:" + string(reqQuery.Data))
@@ -104,7 +105,7 @@ func (app *PersistentKVStoreApplication) Query(reqQuery types.RequestQuery) (res
 		resQuery.Value = value
 		return
 	default:
-		return app.app.Query(reqQuery)
+		return app.app.Query(ctx, reqQuery)
 	}
 }
 

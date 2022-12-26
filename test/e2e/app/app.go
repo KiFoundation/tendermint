@@ -2,6 +2,7 @@ package app
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -200,7 +201,7 @@ func (app *Application) Commit() abci.ResponseCommit {
 }
 
 // Query implements ABCI.
-func (app *Application) Query(req abci.RequestQuery) abci.ResponseQuery {
+func (app *Application) Query(_ context.Context, req abci.RequestQuery) abci.ResponseQuery {
 	return abci.ResponseQuery{
 		Height: int64(app.state.Height),
 		Key:    req.Data,
