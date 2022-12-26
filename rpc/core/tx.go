@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"sort"
@@ -8,7 +9,6 @@ import (
 	tmmath "github.com/tendermint/tendermint/libs/math"
 	tmquery "github.com/tendermint/tendermint/libs/pubsub/query"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	rpctypes "github.com/tendermint/tendermint/rpc/jsonrpc/types"
 	"github.com/tendermint/tendermint/state/txindex/null"
 	"github.com/tendermint/tendermint/types"
 )
@@ -17,7 +17,7 @@ import (
 // transaction is in the mempool, invalidated, or was not sent in the first
 // place.
 // More: https://docs.tendermint.com/master/rpc/#/Info/tx
-func Tx(ctx *rpctypes.Context, hash []byte, prove bool) (*ctypes.ResultTx, error) {
+func Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.ResultTx, error) {
 	// if index is disabled, return error
 	if _, ok := env.TxIndexer.(*null.TxIndex); ok {
 		return nil, fmt.Errorf("transaction indexing is disabled")
@@ -55,7 +55,7 @@ func Tx(ctx *rpctypes.Context, hash []byte, prove bool) (*ctypes.ResultTx, error
 // list of transactions (maximum ?per_page entries) and the total count.
 // More: https://docs.tendermint.com/master/rpc/#/Info/tx_search
 func TxSearch(
-	ctx *rpctypes.Context,
+	ctx context.Context,
 	query string,
 	prove bool,
 	pagePtr, perPagePtr *int,
@@ -74,7 +74,7 @@ func TxSearch(
 		return nil, err
 	}
 
-	results, err := env.TxIndexer.Search(ctx.Context(), q)
+	results, err := env.TxIndexer.Search(ctx, q)
 	if err != nil {
 		return nil, err
 	}
