@@ -205,6 +205,7 @@ func (txi *TxIndex) Search(ctx context.Context, q *query.Query) ([]*abci.TxResul
 	// conditions to skip because they're handled before "everything else"
 	skipIndexes := make([]int, 0)
 
+	fmt.Println("DEBUG Extracting ranges")
 	// extract ranges
 	// if both upper and lower bounds exist, it's better to get them in order not
 	// no iterate over kvs that are not within range.
@@ -231,6 +232,8 @@ func (txi *TxIndex) Search(ctx context.Context, q *query.Query) ([]*abci.TxResul
 	// if there is a height condition ("tx.height=3"), extract it
 	height := lookForHeight(conditions)
 
+	fmt.Println("DEBUG Checking conditions")
+
 	// for all other conditions
 	for i, c := range conditions {
 		if intInSlice(i, skipIndexes) {
@@ -252,18 +255,24 @@ func (txi *TxIndex) Search(ctx context.Context, q *query.Query) ([]*abci.TxResul
 	}
 
 	results := make([]*abci.TxResult, 0, len(filteredHashes))
+Loop:
 	for _, h := range filteredHashes {
+		fmt.Printf("DEBUG Getting tx: Tx{%X}\n", h)
 		res, err := txi.Get(h)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get Tx{%X}: %w", h, err)
 		}
+		fmt.Printf("DEBUG Appending tx to result: Tx{%X}\n", h)
 		results = append(results, res)
 
+		fmt.Println("DEBUG: Checking context")
 		// Potentially exit early.
 		select {
 		case <-ctx.Done():
-			break
+			fmt.Println("DEBUG: Context have been cancelled")
+			break Loop
 		default:
+			fmt.Println("DEBUG: Context is good")
 		}
 	}
 
